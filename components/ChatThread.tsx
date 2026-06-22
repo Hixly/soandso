@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MessageBubble } from './MessageBubble'
 import { BottomNav } from './BottomNav'
+import { SoAndSoMark } from './SoAndSoMark'
 import type { Source } from '@/lib/types'
 
 type ChatMessage = { role: 'user' | 'assistant'; content: string; sources?: Source[] | null }
@@ -44,6 +45,9 @@ export function ChatThread({ initial }: { initial: ChatMessage[] }) {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <header className="flex items-center justify-center border-b border-brand-ink/10 py-2">
+        <SoAndSoMark progress={1} size={34} animate={false} />
+      </header>
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-6">
         {messages.length === 0 && (
           <p className="m-auto text-center opacity-50">Say hello to get started.</p>
