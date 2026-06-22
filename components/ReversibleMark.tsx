@@ -1,8 +1,8 @@
 // Original reversible-image art for the onboarding build (NOT the brand logo).
-// Two mirrored face profiles face each other — "So" & "So" — and the negative
-// space between them reads as a vase (a Rubin's-vase illusion). The single
-// contour line draws itself as `progress` rises 0→1, so the user watches their
-// So&So come into being.
+// Two mirrored face profiles draw toward each other and meet — the line that
+// forms each profile is also one side of a heart, so the finished mark reads
+// both ways. The contour draws itself as `progress` rises 0→1, so the user
+// watches their So&So come into being.
 type Props = {
   progress?: number // 0 = blank, 1 = fully drawn
   name?: string
@@ -12,12 +12,11 @@ type Props = {
 
 const INK = '#1A1A1A'
 
-// Left face's front contour (forehead → nose → lips → chin → jaw), kept left of
-// the centre line (x=160) so the mirrored copy forms the vase between the noses.
-const PROFILE =
-  'M148,52 C141,80 139,106 146,126 C151,143 156,150 156,170 ' +
-  'C156,182 146,186 150,196 C156,200 156,210 150,221 ' +
-  'C145,233 154,243 152,259 C150,279 134,289 118,302'
+// Left side: top cleft → forehead/lobe → nose notch → chin, down to the point.
+// Mirrored to form the right side, the gap between the two reads as a heart.
+const SIDE =
+  'M160,250 C150,205 128,180 116,156 C100,134 92,112 104,92 ' +
+  'C118,70 150,74 160,96'
 
 function clamp01(n: number) {
   return Math.max(0, Math.min(1, n))
@@ -25,15 +24,16 @@ function clamp01(n: number) {
 
 export function ReversibleMark({ progress = 1, name, size = 150, animate = true }: Props) {
   const p = clamp01(progress)
-  const transition = animate ? 'stroke-dashoffset 700ms ease' : undefined
+  const transition = animate ? 'stroke-dashoffset 700ms ease, opacity 500ms ease' : undefined
   const dash = { strokeDasharray: 1, strokeDashoffset: 1 - p, transition }
+  const eyeOpacity = p > 0.75 ? 0.9 : 0
 
   return (
     <div className="flex flex-col items-center gap-3">
       <svg
-        viewBox="0 0 320 360"
+        viewBox="0 0 320 300"
         width={size}
-        height={(size * 360) / 320}
+        height={(size * 300) / 320}
         fill="none"
         stroke={INK}
         strokeWidth={2.4}
@@ -42,10 +42,13 @@ export function ReversibleMark({ progress = 1, name, size = 150, animate = true 
         role="img"
         aria-label="So&So"
       >
-        {/* Left "So" */}
-        <path d={PROFILE} pathLength={1} style={dash} />
+        {/* Left "So" — drawn from the chin up over the forehead */}
+        <path d={SIDE} pathLength={1} style={dash} />
         {/* Right "So" — mirror about the centre line (x=160) */}
-        <path d={PROFILE} pathLength={1} style={dash} transform="translate(320,0) scale(-1,1)" />
+        <path d={SIDE} pathLength={1} style={dash} transform="translate(320,0) scale(-1,1)" />
+        {/* the two faces' eyes, appearing once the heart is nearly complete */}
+        <circle cx="118" cy="118" r="3" fill={INK} stroke="none" opacity={eyeOpacity} style={{ transition }} />
+        <circle cx="202" cy="118" r="3" fill={INK} stroke="none" opacity={eyeOpacity} style={{ transition }} />
       </svg>
       {name && <span className="text-lg font-medium tracking-tight">{name}</span>}
     </div>
