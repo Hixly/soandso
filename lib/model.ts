@@ -21,6 +21,7 @@ export type ModelBackend = {
 export function getModel(): ModelBackend {
   if (process.env.GEMINI_API_KEY) {
     // Lazy require so the Gemini SDK is never loaded in keyless/mock dev.
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { geminiBackend } = require('./model.gemini') as typeof import('./model.gemini')
     return geminiBackend()
   }
