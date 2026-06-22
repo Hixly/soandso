@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# So&So
 
-## Getting Started
+**Not a smarter AI — yours.**
 
-First, run the development server:
+A personal AI chatbot a non-technical person can deeply customize in about 90 seconds. You shape it with sliders (never a prompt box), it remembers you across sessions, pulls live web sources when a question needs them, and can take three small actions: save a reminder, summarize a pasted URL, and draft a message.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Runs keyless
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The whole app builds, runs, and demos **without any model API key**. When `GEMINI_API_KEY` is unset, the model adapter (`lib/model.ts`) uses a deterministic **mock backend** so onboarding, chat, memory, and the 3 actions all work. Drop in a key and it switches to live Gemini with **no code changes**.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Default model:** `gemini-3.1-flash-lite` (cost-efficient — most turns + the classifier)
+- **Escalation model:** `gemini-3.5-flash` (hard / multi-step questions)
+- **Web search:** native Google Search grounding (live key only)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Override model IDs via `GEMINI_MODEL_DEFAULT` / `GEMINI_MODEL_ESCALATE` if the slugs differ in Google AI Studio.
 
-## Learn More
+## Stack
 
-To learn more about Next.js, take a look at the following resources:
+Next.js 14 (App Router) · TypeScript · Tailwind (antique-white `#FAEBD7` theme) · Supabase (Postgres + magic-link Auth + RLS) · `@google/genai` · Vitest.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. `npm install`
+2. Create a Supabase project and run `supabase/migrations/0001_init.sql` (SQL editor or `supabase db push`).
+3. Copy `.env.local.example` → `.env.local` and fill in:
+   - `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (required — DB + auth)
+   - `GEMINI_API_KEY` (optional — omit to run in mock mode)
+4. In Supabase Auth settings, add `http://localhost:3000/auth/callback` to the redirect allowlist.
+5. `npm run dev` → http://localhost:3000
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `npm run dev` — dev server
+- `npm run build` — production build (also lints + typechecks)
+- `npm test` — Vitest unit tests
+- `npm run test:watch` — watch mode
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Screens
+
+Onboarding (5-step wizard, the line-art face wakes up as you go) · Chat (thread + source cards) · Memory (editable) · Tune (re-shape name/job/personality anytime).
