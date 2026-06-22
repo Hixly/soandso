@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { SoAndSoMark } from '@/components/SoAndSoMark'
+import { BrandLogo } from '@/components/BrandLogo'
 
 export default function AuthPage() {
   const [email, setEmail] = useState('')
@@ -26,7 +26,7 @@ export default function AuthPage() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6">
-      <SoAndSoMark progress={1} size={120} animate={false} />
+      <BrandLogo width={150} />
       <h1 className="text-2xl font-semibold tracking-tight">So&amp;So</h1>
       <p className="-mt-4 text-sm opacity-50">Not a smarter AI — yours.</p>
       {sent ? (

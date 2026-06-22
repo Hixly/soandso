@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SoAndSoMark } from '@/components/SoAndSoMark'
+import { ReversibleMark } from '@/components/ReversibleMark'
 import { ProgressDots } from '@/components/ProgressDots'
 import { ChipGroup } from '@/components/ChipGroup'
 import { PersonalitySliders } from '@/components/PersonalitySliders'
@@ -60,7 +60,7 @@ export default function OnboardingPage() {
   return (
     <main className={CENTER}>
       <ProgressDots step={step} />
-      <SoAndSoMark progress={step / 5} name={step >= 2 && name ? name : undefined} />
+      <ReversibleMark progress={step / 5} name={step >= 2 && name ? name : undefined} />
 
       {step === 0 && (
         <>
