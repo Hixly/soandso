@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { ComposerPrimitive, MessagePrimitive, ThreadPrimitive } from '@assistant-ui/react'
 
 // Small source-link card, rendered for each grounding citation (source-url part).
@@ -33,6 +34,48 @@ function UserMessage() {
   )
 }
 
+// The So&So "thinking" state: the onboarding heart, drawn small and gently beating
+// while the assistant composes a reply. Shown via the empty-message slot.
+const HEART_SIDE =
+  'M160,248 C142,212 106,188 98,150 C92,118 108,92 132,92 C149,92 158,104 160,118'
+
+const THINKING_WORDS = [
+  'thinking…',
+  'pondering…',
+  'mulling it over…',
+  'gathering thoughts…',
+  'finding the words…',
+  'one sec…',
+  'putting it together…',
+  'reflecting…',
+  'considering…',
+  'noodling on it…',
+]
+
+function ThinkingHeart() {
+  const [word] = useState(() => THINKING_WORDS[Math.floor(Math.random() * THINKING_WORDS.length)])
+  return (
+    <span className="inline-flex items-center gap-2 text-xs italic opacity-60">
+      <svg
+        className="soandso-thinking"
+        width="22"
+        height="22"
+        viewBox="0 0 320 300"
+        fill="none"
+        stroke="#1A1A1A"
+        strokeWidth={11}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d={HEART_SIDE} />
+        <path d={HEART_SIDE} transform="translate(320,0) scale(-1,1)" />
+      </svg>
+      {word}
+    </span>
+  )
+}
+
 function AssistantMessage() {
   return (
     <MessagePrimitive.Root className="flex flex-col items-start gap-2">
@@ -40,6 +83,7 @@ function AssistantMessage() {
         <MessagePrimitive.Parts
           components={{
             Source: ({ url, title }) => <SourceLink url={url} title={title} />,
+            Empty: ThinkingHeart,
           }}
         />
       </div>

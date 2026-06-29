@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
 import {
   streamText,
   convertToModelMessages,
@@ -17,6 +17,10 @@ export const maxDuration = 30
 
 const DEFAULT_MODEL = process.env.GEMINI_MODEL_DEFAULT || 'gemini-3.1-flash-lite'
 const ESCALATE_MODEL = process.env.GEMINI_MODEL_ESCALATE || 'gemini-3.5-flash'
+
+// The AI SDK Google provider defaults to GOOGLE_GENERATIVE_AI_API_KEY; point it at
+// our GEMINI_API_KEY so a single key drives both this and the @google/genai adapter.
+const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })
 
 function htmlToText(html: string): string {
   return html
@@ -148,13 +152,19 @@ export async function POST(req: Request) {
     return streamPlain(result.content)
   }
 
-  // Live Gemini via the AI SDK — token-streamed, with Google Search grounding.
+  // Google Search grounding requires a billing-enabled key, so it's opt-in.
+  // Set GEMINI_GROUNDING=true once billing is on to get live web citations.
+  const grounding =
+    process.env.GEMINI_GROUNDING === 'true'
+      ? ({ google_search: google.tools.googleSearch({}) } as Parameters<typeof streamText>[0]['tools'])
+      : undefined
+
+  // Live Gemini via the AI SDK — token-streamed.
   const result = streamText({
     model: google(escalate ? ESCALATE_MODEL : DEFAULT_MODEL),
     system,
     messages: await convertToModelMessages(messages),
-    // @ai-sdk/google's tool type targets a newer provider spec than ai@6 core; correct at runtime.
-    tools: { google_search: google.tools.googleSearch({}) } as Parameters<typeof streamText>[0]['tools'],
+    tools: grounding,
     onFinish: async ({ text, sources }) => {
       const mapped: Source[] | null =
         sources && sources.length

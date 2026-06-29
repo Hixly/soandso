@@ -42,7 +42,7 @@ export default async function ChatPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-center border-b border-brand-ink/10 py-2">
+      <header className="flex items-center justify-start border-b border-brand-ink/10 px-5 py-2.5">
         <BrandLogo width={26} />
       </header>
       <ChatRuntimeProvider initialMessages={initialMessages}>

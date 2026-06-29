@@ -26,18 +26,26 @@ export async function PATCH(req: Request) {
 
   const body = (await req.json()) as {
     name: string
-    jobs: string[]
+    jobs?: string[]
+    job?: string
     jobCustom?: string
     personality: Personality
   }
-  const roles = (body.jobs ?? [])
-    .map((j) =>
-      j === 'Something else'
-        ? String(body.jobCustom || 'a helpful personal assistant')
-        : (JOB_PRESETS[j] ?? j),
-    )
-    .filter(Boolean)
-  const job = roles.length ? roles.join(', and ') : 'a helpful personal assistant'
+  // Accept either an onboarding-style chip array (`jobs`) or a free-text `job`
+  // string (the Tune screen edits the composed role sentence directly).
+  let job: string
+  if (Array.isArray(body.jobs) && body.jobs.length) {
+    const roles = body.jobs
+      .map((j) =>
+        j === 'Something else'
+          ? String(body.jobCustom || 'a helpful personal assistant')
+          : (JOB_PRESETS[j] ?? j),
+      )
+      .filter(Boolean)
+    job = roles.length ? roles.join(', and ') : 'a helpful personal assistant'
+  } else {
+    job = body.job?.trim() || 'a helpful personal assistant'
+  }
 
   const system_prompt = buildSystemPrompt(body.name, job, body.personality)
   const { error } = await supabase
