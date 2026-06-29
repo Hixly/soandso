@@ -103,7 +103,7 @@ export function Thread() {
             <ComposerPrimitive.Input
               placeholder="Message your So&So…"
               rows={1}
-              className="flex-1 resize-none rounded-xl border border-brand-ink/20 bg-transparent px-4 py-3 text-sm outline-none focus:border-brand-ink"
+              className="flex-1 resize-none rounded-xl border border-brand-ink/20 bg-transparent px-4 py-3 text-base outline-none focus:border-brand-ink"
             />
             <ComposerPrimitive.Send className="flex size-11 items-center justify-center rounded-xl bg-brand-ink text-brand-bg disabled:opacity-40">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
