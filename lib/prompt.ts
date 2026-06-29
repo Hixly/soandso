@@ -8,6 +8,31 @@ export const JOB_PRESETS: Record<string, string> = {
   'Keep me organized': 'an organized assistant who helps the user plan and stay on top of things',
 }
 
+// Short second-person verb phrases, for stitching a natural greeting when the
+// user picks multiple jobs (e.g. "help you write, talk things through, …").
+export const JOB_SHORT: Record<string, string> = {
+  'Stay on my goals': 'keep you on track with your goals',
+  'Help me write': 'help you write',
+  'Talk things through': 'talk things through',
+  'Answer my questions': 'answer your questions',
+  'Keep me organized': 'keep you organized',
+}
+
+// Build "A, B, and C" from a list of phrases.
+function joinPhrases(parts: string[]): string {
+  if (parts.length <= 1) return parts[0] ?? ''
+  if (parts.length === 2) return `${parts[0]} and ${parts[1]}`
+  return `${parts.slice(0, -1).join(', ')}, and ${parts[parts.length - 1]}`
+}
+
+// Turn the selected job chips into a clean "I'm here to …" phrase.
+export function helpPhrase(jobs: string[], jobCustom?: string): string {
+  const parts = (jobs ?? [])
+    .map((j) => (j === 'Something else' ? (jobCustom?.trim() || '') : (JOB_SHORT[j] ?? '')))
+    .filter(Boolean)
+  return parts.length ? joinPhrases(parts) : 'help you out'
+}
+
 export function buildSystemPrompt(name: string, job: string, p: Personality): string {
   const tone: string[] = []
   tone.push(
@@ -32,7 +57,7 @@ export function buildSystemPrompt(name: string, job: string, p: Personality): st
         : 'Match answer length to the question.',
   )
 
-  return `You are ${name}, a personal AI for one user. Your job: ${job}.
+  return `You are ${name}, a personal AI for one user. Your role: ${job}.
 ${tone.join(' ')}
 You remember things about this user; relevant memories are provided each turn — use them naturally, never robotically.
 When a question depends on current or verifiable facts, use web search and cite the source.

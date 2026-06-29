@@ -27,7 +27,7 @@ export default function AuthPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 px-6">
       <BrandLogo width={150} />
-      <h1 className="text-2xl font-semibold tracking-tight">So&amp;So</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-tight">So&amp;So</h1>
       <p className="-mt-4 text-sm opacity-50">Not a smarter AI — yours.</p>
       {sent ? (
         <p className="max-w-sm text-center text-lg opacity-80">

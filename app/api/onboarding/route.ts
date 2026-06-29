@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { JOB_PRESETS, buildSystemPrompt } from '@/lib/prompt'
+import { JOB_PRESETS, buildSystemPrompt, helpPhrase } from '@/lib/prompt'
 import type { Personality } from '@/lib/types'
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
   if (!user) return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
 
   const body = (await req.json()) as {
-    job: string
+    jobs: string[]
     jobCustom?: string
     name: string
     personality: Personality
@@ -19,10 +19,14 @@ export async function POST(req: Request) {
     keepInMind?: string
   }
 
-  const job =
-    body.job === 'Something else'
-      ? String(body.jobCustom || 'a helpful personal assistant')
-      : (JOB_PRESETS[body.job] ?? 'a helpful personal assistant')
+  const roles = (body.jobs ?? [])
+    .map((j) =>
+      j === 'Something else'
+        ? String(body.jobCustom || 'a helpful personal assistant')
+        : (JOB_PRESETS[j] ?? j),
+    )
+    .filter(Boolean)
+  const job = roles.length ? roles.join(', and ') : 'a helpful personal assistant'
 
   const system_prompt = buildSystemPrompt(body.name, job, body.personality)
 
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
 
   // Seed a personalized first message that proves personality + purpose + memory at once.
   const seedMemory = seeds[0]?.content
-  const firstMessage = `Hey — I'm ${body.name}. I'm here to help you as ${job}. ${
+  const firstMessage = `Hey — I'm ${body.name}. I'm here to ${helpPhrase(body.jobs, body.jobCustom)}. ${
     seedMemory ? `You mentioned "${seedMemory}". Want to start there?` : "What's on your mind?"
   }`
   await supabase.from('messages').insert({

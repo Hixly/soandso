@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { BrandLogo } from '@/components/BrandLogo'
 import { ReversibleMark } from '@/components/ReversibleMark'
 import { ProgressDots } from '@/components/ProgressDots'
 import { ChipGroup } from '@/components/ChipGroup'
 import { PersonalitySliders } from '@/components/PersonalitySliders'
 import { TonePreview } from '@/components/TonePreview'
-import { surpriseName } from '@/lib/names'
+import { surpriseName, NAMES } from '@/lib/names'
 import type { Personality } from '@/lib/types'
 
 const JOBS = [
@@ -19,14 +20,14 @@ const JOBS = [
   'Something else',
 ]
 
-const NAME_HINTS = ['Sage', 'Coach', 'Buddy', 'So&So']
-const CENTER = 'flex min-h-screen flex-col items-center justify-center gap-8 px-6 text-center'
-const PRIMARY = 'rounded-xl bg-brand-ink px-6 py-3 font-medium text-brand-bg disabled:opacity-40'
+const NAME_HINTS = NAMES
+const PRIMARY =
+  'rounded-2xl bg-brand-ink px-8 py-3.5 text-sm font-semibold tracking-wide text-brand-bg shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.98] disabled:opacity-40 disabled:hover:shadow-sm'
 
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(0)
-  const [job, setJob] = useState<string | null>(null)
+  const [jobs, setJobs] = useState<string[]>([])
   const [jobCustom, setJobCustom] = useState('')
   const [name, setName] = useState('')
   const [personality, setPersonality] = useState<Personality>({
@@ -51,34 +52,39 @@ export default function OnboardingPage() {
     const res = await fetch('/api/onboarding', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ job, jobCustom, name, personality, goal, keepInMind }),
+      body: JSON.stringify({ jobs, jobCustom, name, personality, goal, keepInMind }),
     })
     if (res.ok) router.push('/chat')
     else setSubmitting(false)
   }
 
   return (
-    <main className={CENTER}>
-      <ProgressDots step={step} />
-      <ReversibleMark progress={step / 5} name={step >= 2 && name ? name : undefined} />
+    <main className="flex min-h-screen flex-col items-center justify-start px-6 pt-[14vh] text-center">
+      <div className="flex w-full max-w-md flex-col items-center gap-6">
+        {step === 0 ? (
+          <BrandLogo width={160} />
+        ) : (
+          <ReversibleMark progress={step / 5} name={step >= 2 && name ? name : undefined} size={160} />
+        )}
+        <ProgressDots step={step} />
 
-      {step === 0 && (
-        <>
-          <div className="space-y-2">
-            <h1 className="text-3xl font-semibold tracking-tight">Let&apos;s build your So&amp;So.</h1>
-            <p className="opacity-70">A chatbot that&apos;s actually yours. Takes about a minute.</p>
-          </div>
-          <button className={PRIMARY} onClick={next}>
-            Start →
-          </button>
-        </>
-      )}
+        {step === 0 && (
+          <>
+            <div className="space-y-3">
+              <h1 className="font-display text-3xl font-semibold tracking-tight">Let&apos;s build your So&amp;So.</h1>
+              <p className="text-sm opacity-60">A chatbot that&apos;s actually yours. Takes about a minute.</p>
+            </div>
+            <button className={PRIMARY} onClick={next}>
+              Start →
+            </button>
+          </>
+        )}
 
       {step === 1 && (
         <>
-          <h2 className="text-2xl font-medium">What do you want your So&amp;So to help with?</h2>
-          <ChipGroup options={JOBS} value={job} onChange={setJob} />
-          {job === 'Something else' && (
+          <h2 className="font-display text-2xl font-medium">What do you want your So&amp;So to help with?</h2>
+          <ChipGroup options={JOBS} value={jobs} onChange={setJobs} />
+          {jobs.includes('Something else') && (
             <input
               autoFocus
               value={jobCustom}
@@ -89,7 +95,7 @@ export default function OnboardingPage() {
           )}
           <button
             className={PRIMARY}
-            disabled={!job || (job === 'Something else' && !jobCustom.trim())}
+            disabled={jobs.length === 0 || (jobs.includes('Something else') && !jobCustom.trim())}
             onClick={next}
           >
             Next →
@@ -99,7 +105,7 @@ export default function OnboardingPage() {
 
       {step === 2 && (
         <>
-          <h2 className="text-2xl font-medium">Give it a name.</h2>
+          <h2 className="font-display text-2xl font-medium">Give it a name.</h2>
           <input
             autoFocus
             value={name}
@@ -107,7 +113,10 @@ export default function OnboardingPage() {
             placeholder={`${NAME_HINTS[hint]}…`}
             className="w-full max-w-sm rounded-xl border border-brand-ink/20 bg-transparent px-4 py-3 text-center text-lg outline-none focus:border-brand-ink"
           />
-          <button className="text-sm underline opacity-70" onClick={() => setName(surpriseName())}>
+          <button
+            className="text-xs font-medium uppercase tracking-widest opacity-50 transition-opacity hover:opacity-80"
+            onClick={() => setName(surpriseName(name))}
+          >
             Surprise me
           </button>
           <button className={PRIMARY} disabled={!name.trim()} onClick={next}>
@@ -118,7 +127,7 @@ export default function OnboardingPage() {
 
       {step === 3 && (
         <>
-          <h2 className="text-2xl font-medium">How should it talk to you?</h2>
+          <h2 className="font-display text-2xl font-medium">How should it talk to you?</h2>
           <PersonalitySliders value={personality} onChange={setPersonality} />
           <TonePreview personality={personality} />
           <button className={PRIMARY} onClick={next}>
@@ -129,7 +138,7 @@ export default function OnboardingPage() {
 
       {step === 4 && (
         <>
-          <h2 className="text-2xl font-medium">
+          <h2 className="font-display text-2xl font-medium">
             Last thing — tell your So&amp;So a little about you.
           </h2>
           <p className="opacity-60">(Optional)</p>
@@ -147,8 +156,11 @@ export default function OnboardingPage() {
               className="rounded-xl border border-brand-ink/20 bg-transparent px-4 py-3 outline-none focus:border-brand-ink"
             />
           </div>
-          <div className="flex items-center gap-4">
-            <button className="text-sm underline opacity-70" onClick={next}>
+          <div className="flex items-center gap-5">
+            <button
+              className="text-xs font-medium uppercase tracking-widest opacity-50 transition-opacity hover:opacity-80"
+              onClick={next}
+            >
               Skip
             </button>
             <button className={PRIMARY} onClick={next}>
@@ -160,12 +172,13 @@ export default function OnboardingPage() {
 
       {step === 5 && (
         <>
-          <h2 className="text-2xl font-medium">Meet {name}.</h2>
+          <h2 className="font-display text-2xl font-medium">Meet {name}.</h2>
           <button className={PRIMARY} disabled={submitting} onClick={finish}>
             {submitting ? 'Waking up…' : `Start chatting →`}
           </button>
         </>
       )}
+      </div>
     </main>
   )
 }
