@@ -26,8 +26,9 @@ export function wantsSummary(text: string): boolean {
 // sit at the start (after filler), at the end, or carry an "as/to/under <label>" clause.
 export function detectSave(text: string): { label: string; remainder: string } | null {
   const t = text.trim()
+  // Trigger verbs: "save", "bookmark", or "pin" — followed by this/that/it/etc.
   const cmd =
-    /\bsave\s+(?:this|that|it|the\s+(?:last|above|previous)(?:\s+\w+)?)\b(\s+(?:as|to|under|into|in|for)\b[\w\s]*)?/i
+    /\b(?:save|bookmark|pin)\s+(?:this|that|it|the\s+(?:last|above|previous)(?:\s+\w+)?)\b(\s+(?:as|to|under|into|in|for)\b[\w\s]*)?/i
   const m = t.match(cmd)
   if (!m || m.index === undefined) return null
 

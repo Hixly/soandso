@@ -21,6 +21,8 @@ test('detects save command, label, and remainder', () => {
   expect(detectSave('save this')).toEqual({ label: 'Saved', remainder: '' })
   expect(detectSave('save this as a recipe')).toEqual({ label: 'Recipe', remainder: '' })
   expect(detectSave('save that to my ideas')).toEqual({ label: 'Ideas', remainder: '' })
+  expect(detectSave('bookmark this')).toEqual({ label: 'Saved', remainder: '' })
+  expect(detectSave('pin this as ideas')).toEqual({ label: 'Ideas', remainder: '' })
   // Trailing save after a real question → keeps the question as remainder.
   expect(detectSave('recommend a fun game? save this')).toEqual({
     label: 'Saved',

@@ -53,8 +53,9 @@ export default function SavedPage() {
           <p className="opacity-50">Loading…</p>
         ) : items.length === 0 ? (
           <p className="opacity-60">
-            Nothing saved yet. In a chat, just say <em>&ldquo;save this&rdquo;</em> — or{' '}
-            <em>&ldquo;save this as a recipe&rdquo;</em> to file it under a label.
+            Nothing saved yet. In a chat, just say <em>&ldquo;save this&rdquo;</em> or{' '}
+            <em>&ldquo;bookmark this&rdquo;</em> — add <em>&ldquo;as a recipe&rdquo;</em> to file it
+            under a label.
           </p>
         ) : (
           <div className="flex flex-col gap-8">
