@@ -15,7 +15,7 @@ export default function TunePage() {
     brief_detailed: 50,
   })
   const [loading, setLoading] = useState(true)
-  const [saved, setSaved] = useState(false)
+  const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
 
   useEffect(() => {
     fetch('/api/tune')
@@ -30,14 +30,21 @@ export default function TunePage() {
       .finally(() => setLoading(false))
   }, [])
 
+  // Any edit drops the "Saved ✓" confirmation so it never lies about stale state.
+  const edited = () => setStatus((s) => (s === 'saved' ? 'idle' : s))
+
   async function save() {
-    setSaved(false)
-    await fetch('/api/tune', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, job, personality }),
-    })
-    setSaved(true)
+    setStatus('saving')
+    try {
+      const res = await fetch('/api/tune', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, job, personality }),
+      })
+      setStatus(res.ok ? 'saved' : 'error')
+    } catch {
+      setStatus('error')
+    }
   }
 
   if (loading) {
@@ -58,7 +65,10 @@ export default function TunePage() {
           Name
           <input
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value)
+              edited()
+            }}
             className="rounded-xl border border-brand-ink/20 bg-transparent px-4 py-2.5 text-base text-brand-ink outline-none focus:border-brand-ink"
           />
         </label>
@@ -67,23 +77,35 @@ export default function TunePage() {
           What it helps with
           <input
             value={job}
-            onChange={(e) => setJob(e.target.value)}
+            onChange={(e) => {
+              setJob(e.target.value)
+              edited()
+            }}
             className="rounded-xl border border-brand-ink/20 bg-transparent px-4 py-2.5 text-base text-brand-ink outline-none focus:border-brand-ink"
           />
         </label>
 
         <div className="flex flex-col items-center gap-4 pt-2">
-          <PersonalitySliders value={personality} onChange={setPersonality} />
+          <PersonalitySliders
+            value={personality}
+            onChange={(p) => {
+              setPersonality(p)
+              edited()
+            }}
+          />
           <TonePreview personality={personality} />
         </div>
 
         <button
           onClick={save}
-          className="rounded-xl bg-brand-ink px-6 py-3 font-medium text-brand-bg"
+          disabled={status === 'saving' || status === 'saved'}
+          className="rounded-xl bg-brand-ink px-6 py-3 font-medium text-brand-bg transition-opacity disabled:opacity-70"
         >
-          Save
+          {status === 'saving' ? 'Saving…' : status === 'saved' ? 'Saved ✓' : 'Save changes'}
         </button>
-        {saved && <p className="text-center text-sm opacity-70">Saved ✓</p>}
+        {status === 'error' && (
+          <p className="text-center text-sm text-red-700">Couldn&apos;t save — try again.</p>
+        )}
       </div>
       <BottomNav />
     </div>
