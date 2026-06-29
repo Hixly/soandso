@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import type { UIMessage } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { ChatRuntimeProvider } from '@/components/chat/ChatRuntimeProvider'
@@ -42,8 +43,17 @@ export default async function ChatPage() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-start border-b border-brand-ink/10 px-5 py-2.5">
+      <header className="flex items-center justify-between border-b border-brand-ink/10 px-5 py-2.5">
         <BrandLogo width={26} />
+        <Link
+          href="/saved"
+          aria-label="Saved"
+          className="opacity-60 transition-opacity hover:opacity-100"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+          </svg>
+        </Link>
       </header>
       <ChatRuntimeProvider initialMessages={initialMessages}>
         <Thread />
