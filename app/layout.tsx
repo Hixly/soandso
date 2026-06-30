@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
@@ -38,6 +38,15 @@ export const metadata: Metadata = {
     description:
       "Shape a personal AI with sliders, not prompts. It remembers you and sounds like you.",
   },
+  appleWebApp: {
+    capable: true,
+    title: "So&So",
+    statusBarStyle: "default",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#FAEBD7",
 };
 
 export default function RootLayout({

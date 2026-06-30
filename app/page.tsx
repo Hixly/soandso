@@ -5,6 +5,7 @@ import { SelfDrawingLogo } from '@/components/SelfDrawingLogo'
 import { SignOutButton } from '@/components/SignOutButton'
 import { SliderDemo } from '@/components/landing/SliderDemo'
 import { ChatMockup } from '@/components/landing/ChatMockup'
+import { InstallGuide } from '@/components/landing/InstallGuide'
 import { Reveal } from '@/components/landing/Reveal'
 
 const PILL_PRIMARY =
@@ -190,6 +191,18 @@ export default async function Home() {
           <h2 className="font-display text-2xl font-medium">Make one that’s yours.</h2>
           <div className="flex flex-wrap items-center justify-center gap-3">{heroCtas}</div>
         </section>
+
+        {/* Add to home screen */}
+        <Reveal className="mt-24 w-full">
+          <h2 className="font-display text-2xl font-medium">Keep it a tap away</h2>
+          <p className="mx-auto mt-3 max-w-md text-sm opacity-65">
+            Add So&So to your home screen and it opens like a real app — full screen, no browser
+            bars.
+          </p>
+          <div className="mt-8">
+            <InstallGuide />
+          </div>
+        </Reveal>
       </main>
 
       {/* Footer */}
