@@ -20,8 +20,24 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://soandso-orcin.vercel.app"),
   title: "So&So — Not a smarter AI. Yours.",
-  description: "A personal AI chatbot that's actually yours.",
+  description:
+    "A personal AI you shape in under two minutes with sliders, not prompts. It remembers what matters and sounds like you. Not a smarter AI — yours.",
+  openGraph: {
+    title: "So&So — Not a smarter AI. Yours.",
+    description:
+      "Shape a personal AI with sliders, not prompts. It remembers you and sounds like you.",
+    url: "/",
+    siteName: "So&So",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "So&So — Not a smarter AI. Yours.",
+    description:
+      "Shape a personal AI with sliders, not prompts. It remembers you and sounds like you.",
+  },
 };
 
 export default function RootLayout({

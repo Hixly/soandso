@@ -4,7 +4,7 @@ import type { UIMessage } from 'ai'
 import { createClient } from '@/lib/supabase/server'
 import { ChatRuntimeProvider } from '@/components/chat/ChatRuntimeProvider'
 import { Thread } from '@/components/chat/Thread'
-import { BrandLogo } from '@/components/BrandLogo'
+import { LogoMark } from '@/components/LogoMark'
 import { BottomNav } from '@/components/BottomNav'
 import { RECENT_N } from '@/lib/memory'
 import type { Source } from '@/lib/types'
@@ -44,16 +44,28 @@ export default async function ChatPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="flex items-center justify-between border-b border-brand-ink/10 px-5 py-2.5">
-        <BrandLogo width={26} />
-        <Link
-          href="/saved"
-          aria-label="Saved"
-          className="opacity-60 transition-opacity hover:opacity-100"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-          </svg>
-        </Link>
+        <LogoMark width={26} />
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            aria-label="Home"
+            className="opacity-60 transition-opacity hover:opacity-100"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M3 11.5l9-8 9 8" />
+              <path d="M5 10v10h5v-6h4v6h5V10" />
+            </svg>
+          </Link>
+          <Link
+            href="/saved"
+            aria-label="Saved"
+            className="opacity-60 transition-opacity hover:opacity-100"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+            </svg>
+          </Link>
+        </div>
       </header>
       <ChatRuntimeProvider initialMessages={initialMessages}>
         <Thread />

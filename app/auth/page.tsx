@@ -1,13 +1,20 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { BrandLogo } from '@/components/BrandLogo'
 
 type Mode = 'signin' | 'signup'
 
 export default function AuthPage() {
+  // Start in sign-in so server and client render the same markup (no hydration
+  // mismatch); switch to sign-up after mount when the landing linked ?mode=signup.
   const [mode, setMode] = useState<Mode>('signin')
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get('mode') === 'signup') {
+      setMode('signup')
+    }
+  }, [])
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +37,7 @@ export default function AuthPage() {
       }
       // If email confirmation is OFF, a session is returned immediately → go in.
       if (data.session) {
-        window.location.assign('/')
+        window.location.assign('/chat')
         return
       }
       // Otherwise Supabase emailed a confirmation link.

@@ -22,6 +22,46 @@ body {
   }
 }
 
+/* Scroll-reveal (landing sections fade + lift into view). */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal-in {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Self-drawing brand logo (landing hero): stroke draws on, then fill fades in. */
+@keyframes soandso-draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes soandso-fill {
+  to { opacity: 1; }
+}
+.logo-draw-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: soandso-draw 5.5s ease forwards;
+}
+.logo-draw-fill {
+  opacity: 0;
+  animation: soandso-fill 1.2s ease forwards;
+  animation-delay: 5s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .logo-draw-stroke { animation: none; stroke-dashoffset: 0; }
+  .logo-draw-fill { animation: none; opacity: 1; }
+}
+
 /* So&So "thinking" heartbeat — used by the chat loading indicator */
 @keyframes soandso-heartbeat {
   0% { transform: scale(1); opacity: 0.5; }
