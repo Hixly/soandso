@@ -8,7 +8,7 @@ const STEPS: Record<Platform, { label: string; steps: string[] }> = {
   ios: {
     label: 'iPhone / iPad',
     steps: [
-      'Open So&So in Safari.',
+      'Open So&So in Safari — not inside another app (Messages, Gmail, etc.), or the option won’t appear.',
       'Tap the Share button (the square with an upward arrow).',
       'Scroll down and tap “Add to Home Screen.”',
       'Tap “Add” — So&So now lives on your home screen like an app.',
