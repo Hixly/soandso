@@ -85,6 +85,10 @@ function AssistantMessage() {
             Source: ({ url, title }) => <SourceLink url={url} title={title} />,
             Empty: ThinkingHeart,
           }}
+          // Source citations legitimately land after the text part; without this,
+          // assistant-ui re-shows the "thinking" fallback whenever a message ends
+          // on a non-text part (i.e. every grounded reply with citations).
+          unstable_showEmptyOnNonTextEnd={false}
         />
       </div>
     </MessagePrimitive.Root>

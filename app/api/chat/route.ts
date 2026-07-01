@@ -17,6 +17,10 @@ export const maxDuration = 30
 
 const DEFAULT_MODEL = process.env.GEMINI_MODEL_DEFAULT || 'gemini-3.1-flash-lite'
 const ESCALATE_MODEL = process.env.GEMINI_MODEL_ESCALATE || 'gemini-3.5-flash'
+// Search grounding isn't enabled on the Gemini 3.x models at our tier yet, so
+// grounded turns use a 2.5 model that supports the google_search tool.
+const GROUNDING_MODEL = process.env.GEMINI_GROUNDING_MODEL || 'gemini-2.5-flash'
+const GROUNDING_ON = process.env.GEMINI_GROUNDING === 'true'
 
 // The AI SDK Google provider defaults to GOOGLE_GENERATIVE_AI_API_KEY; point it at
 // our GEMINI_API_KEY so a single key drives both this and the @google/genai adapter.
@@ -243,19 +247,23 @@ export async function POST(req: Request) {
     return streamPlain(content)
   }
 
-  // Google Search grounding requires a billing-enabled key, so it's opt-in.
-  // Set GEMINI_GROUNDING=true once billing is on to get live web citations.
-  const grounding =
-    process.env.GEMINI_GROUNDING === 'true'
-      ? ({ google_search: google.tools.googleSearch({}) } as Parameters<typeof streamText>[0]['tools'])
-      : undefined
+  // Google Search grounding is opt-in (needs billing + a grounding-capable model).
+  // When on, route the turn through GROUNDING_MODEL so live web citations work.
+  const grounding = GROUNDING_ON
+    ? ({ google_search: google.tools.googleSearch({}) } as Parameters<typeof streamText>[0]['tools'])
+    : undefined
+  const modelSlug = GROUNDING_ON
+    ? GROUNDING_MODEL
+    : escalate
+      ? ESCALATE_MODEL
+      : DEFAULT_MODEL
 
   // For a combined save, send the model the cleaned request (not the "…save this" text).
   const modelMessages = combinedSave ? replaceLastUserText(messages, prompt) : messages
 
   // Live Gemini via the AI SDK — token-streamed.
   const result = streamText({
-    model: google(escalate ? ESCALATE_MODEL : DEFAULT_MODEL),
+    model: google(modelSlug),
     system,
     messages: await convertToModelMessages(modelMessages),
     tools: grounding,
@@ -277,5 +285,7 @@ export async function POST(req: Request) {
     },
   })
 
-  return result.toUIMessageStreamResponse()
+  // sendSources: source-url parts are computed but not streamed to the client
+  // unless explicitly opted in — needed for the citation cards to render live.
+  return result.toUIMessageStreamResponse({ sendSources: true })
 }
