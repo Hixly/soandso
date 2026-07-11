@@ -2,6 +2,8 @@
 
 **Not a smarter AI — yours.**
 
+![So&So landing page](.github/screenshot.png)
+
 A personal AI chatbot a non-technical person can deeply customize in about 90 seconds. You shape it with sliders (never a prompt box), it remembers you across sessions, pulls live web sources when a question needs them, and can take three small actions: save a reminder, summarize a pasted URL, and draft a message.
 
 ## Runs keyless
